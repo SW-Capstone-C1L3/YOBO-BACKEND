@@ -10,6 +10,7 @@ public class MongoConfig {
 
     @Bean
     public MongoTemplate createMongoTemplate(){
-        return new MongoTemplate(new MongoClient(), "admin");
+        return new MongoTemplate(new MongoClient(), "YOBO");
     }
 }
+

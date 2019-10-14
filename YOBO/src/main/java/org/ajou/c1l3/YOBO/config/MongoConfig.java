@@ -13,9 +13,10 @@ import java.util.Arrays;
 public class MongoConfig {
     private String password="userpwd";
     @Bean
-    public MongoTemplate createMongoTemplate(){
+    public MongoTemplate createMongoTemplate() {
         MongoCredential credential = MongoCredential.createCredential("YOBO_USER", "YOBO", password.toCharArray());
         //auth code
         return new MongoTemplate(new MongoClient(new ServerAddress("45.119.146.82", 27017), Arrays.asList(credential)), "YOBO");
     }
 }
+

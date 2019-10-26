@@ -22,7 +22,7 @@ public class recipeController {
 
     @GetMapping("/yobo/recipe/{recipeName}")
     public YoboRecipe getYoboRecipe(@PathVariable String recipeName){
-        Query query = Query.query(Criteria.where("name").is(recipeName));
+        Query query = Query.query(Criteria.where("recipe_name").is(recipeName));
 
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }

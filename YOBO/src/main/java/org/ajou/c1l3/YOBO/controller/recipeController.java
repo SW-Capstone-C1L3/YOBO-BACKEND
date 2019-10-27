@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class recipeController {
@@ -23,10 +21,14 @@ public class recipeController {
     @GetMapping("/yobo/recipe/{recipeName}")
     public YoboRecipe getYoboRecipe(@PathVariable String recipeName){
         Query query = Query.query(Criteria.where("recipe_name").is(recipeName));
-
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }
 
+    @PostMapping("/yobo/recipe/createRecipe")
+    public YoboRecipe createRecipe(@RequestBody YoboRecipe recipe){
+        mongoTemplate.insert(recipe);
+        return recipe;
+    }
 
 
 

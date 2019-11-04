@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(collection="Recipe")
 public class YoboRecipe{
+    private String _id;
     private String recipe_name;
     private String writer_id;
     private int difficulty;

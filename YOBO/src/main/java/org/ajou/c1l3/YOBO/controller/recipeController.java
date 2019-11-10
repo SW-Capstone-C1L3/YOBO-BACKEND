@@ -68,14 +68,14 @@ public class recipeController {
         return list;
     }
     @GetMapping("/yobo/recipe/getListbyDid/")
-    public  List<simpleRecipe> getListbyDid(@RequestParam("Did") String Did, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+    public  List<YoboRecipe> getListbyDid(@RequestParam("Did") String Did, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         int skipn=pageNum*10;
         SkipOperation skip= Aggregation.skip(skipn);
         LimitOperation limit =Aggregation.limit(pageSize);
         MatchOperation match = Aggregation.match( Criteria.where("_id").is(Did));
         Aggregation aggregation = Aggregation.newAggregation(skip,limit,match);
-        AggregationResults<simpleRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",simpleRecipe.class);
-        List<simpleRecipe> list = results.getMappedResults();  //결과
+        AggregationResults<YoboRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",YoboRecipe.class);
+        List<YoboRecipe> list = results.getMappedResults();  //결과
         return list;
     }
 

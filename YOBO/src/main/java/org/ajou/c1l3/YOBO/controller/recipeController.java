@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -67,20 +68,14 @@ public class recipeController {
         List<simpleRecipe> list = results.getMappedResults();  //결과
         return list;
     }
-    @GetMapping("/yobo/recipe/getListbyDid/")
-    public  List<YoboRecipe> getListbyDid(@RequestParam("Did") String Did, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
-        int skipn=pageNum*10;
-        SkipOperation skip= Aggregation.skip(skipn);
-        LimitOperation limit =Aggregation.limit(pageSize);
-        MatchOperation match = Aggregation.match( Criteria.where("_id").is(Did));
-        Aggregation aggregation = Aggregation.newAggregation(skip,limit,match);
-        AggregationResults<YoboRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",YoboRecipe.class);
-        List<YoboRecipe> list = results.getMappedResults();  //결과
-        return list;
+    @GetMapping("/yobo/recipe/getRecipebyDid/")
+    public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
+        Query query = Query.query(where("_id").is(Did));
+        return mongoTemplate.findOne(query, YoboRecipe.class);
     }
 
     @PostMapping("/yobo/recipe/createRecipe")
-    public YoboRecipe createRecipe(@RequestBody YoboRecipe recipe){
+    public YoboRecipe createRecipe(@RequestBody YoboRecipe recipe,@RequestParam MultipartFile[] files){
         mongoTemplate.insert(recipe);
         return recipe;
     }

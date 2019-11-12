@@ -109,27 +109,29 @@ public class recipeController {
             recipe1 = objectMapper.readValue(recipe, YoboRecipe.class);
             int imgcnt=0;
             for(int i=0;i<recipe1.getCooking_description().length;i++){
-                if(recipe1.getCooking_description()[i].getImage()=="NULL")continue;
-                System.out.println(files[imgcnt]);
-                String originFilename = files[imgcnt].getOriginalFilename();
-                String extName
-                        = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-                Long size = files[imgcnt].getSize();
-                // 서버에서 저장 할 파일 이름
-                String saveFileName = genSaveFileName(extName);
-                System.out.println("originFilename : " + originFilename);
-                System.out.println("extensionName : " + extName);
-                System.out.println("size : " + size);
-                System.out.println("saveFileName : " + saveFileName);
-                writeFile(files[imgcnt], saveFileName);
-                url = PREFIX_URL + saveFileName;
-                recipe1.getCooking_description()[i].setImage(url);
-               imgcnt+=1;
+                if(recipe1.getCooking_description()[i].getImage().equals("NULL"))continue;
+                else if(recipe1.getCooking_description()[i].getImage().equals("NULL")==false){
+                    System.out.println(recipe1.getCooking_description()[i].getImage());
+                    System.out.println(files[imgcnt]);
+                    String originFilename = files[imgcnt].getOriginalFilename();
+                    String extName
+                            = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+                    Long size = files[imgcnt].getSize();
+                    // 서버에서 저장 할 파일 이름
+                    String saveFileName = genSaveFileName(extName);
+                    System.out.println("originFilename : " + originFilename);
+                    System.out.println("extensionName : " + extName);
+                    System.out.println("size : " + size);
+                    System.out.println("saveFileName : " + saveFileName);
+                    writeFile(files[imgcnt], saveFileName);
+                    url = PREFIX_URL + saveFileName;
+                    recipe1.getCooking_description()[i].setImage(url);
+                    imgcnt+=1;
+                }
+
             }
             mongoTemplate.insert(recipe1);
-//            for(MultipartFile image : files) {
 
-//            }
         }catch (IOException e) {
             System.out.println("Error");
             e.printStackTrace();

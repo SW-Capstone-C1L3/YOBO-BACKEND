@@ -21,7 +21,6 @@ public class YoboRecipe{
     public static class descrition{
         private String description;
         private String image;
-
     }
     @Data
     public static class ingredients{

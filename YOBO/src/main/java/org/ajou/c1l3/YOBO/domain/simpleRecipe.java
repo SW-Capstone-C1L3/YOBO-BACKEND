@@ -13,7 +13,12 @@ public class simpleRecipe{
     private double rating;
     private String[] category;
     private  int serving;
+    private YoboRecipe.descrition[] cooking_description;
 
+    @Data
+    public static class descrition{
+        private String description;
+        private String image;
 
-
+    }
 }

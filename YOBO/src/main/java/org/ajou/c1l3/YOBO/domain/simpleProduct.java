@@ -1,12 +1,11 @@
 package org.ajou.c1l3.YOBO.domain;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document(collection="Product")
-public class YoboProduct {
+public class simpleProduct {
     private String _id;
     private String product_name;
     private int product_price;

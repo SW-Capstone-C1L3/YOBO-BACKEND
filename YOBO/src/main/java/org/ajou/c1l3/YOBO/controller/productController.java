@@ -2,9 +2,7 @@ package org.ajou.c1l3.YOBO.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ajou.c1l3.YOBO.domain.YoboProduct;
-import org.ajou.c1l3.YOBO.domain.YoboRecipe;
-import org.ajou.c1l3.YOBO.domain.simpleRecipe;
-import org.ajou.c1l3.YOBO.repository.CurrentRecipeRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -40,8 +38,7 @@ public class productController {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Autowired
-    CurrentRecipeRepository currentRecipeRepository;
+
     @PostMapping(value = "/yobo/product/createProduct", consumes = {"multipart/form-data"})
     public int createProduct(@RequestParam("img")  MultipartFile files,@RequestParam  String product){
         ObjectMapper objectMapper =new ObjectMapper();
@@ -106,8 +103,8 @@ public class productController {
         return mongoTemplate.find(query, YoboProduct.class);
     }
 
-    @GetMapping("/yobo/recipe/getProducteList/")
-    public  List<YoboProduct> getRecipeList(@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+    @GetMapping("/yobo/product/getProducteList/")
+    public  List<YoboProduct> getProducteList(@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         int skipn=pageNum*pageSize;
         SkipOperation skip= Aggregation.skip(skipn);
         LimitOperation limit =Aggregation.limit(pageSize);

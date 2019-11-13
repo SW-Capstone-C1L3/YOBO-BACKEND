@@ -40,8 +40,8 @@ public class recipeController {
     Path currentRelativePath = Paths.get("");
     String s = currentRelativePath.toAbsolutePath().toString();
 
-    private  String SAVE_PATH = s+"/upload";
-    private  String PREFIX_URL = s+"/upload/";
+    private  String SAVE_PATH = s+"/Recipe/upload";
+    private  String PREFIX_URL = s+"/Recipe/upload/";
     //test
     @Autowired
     MongoTemplate mongoTemplate;
@@ -150,40 +150,9 @@ public class recipeController {
 
     }
 
-    @PostMapping("/yobo/recipe/uploadtest")
-    public int uploadtest(@RequestParam("image") MultipartFile [] files){
-        String url = null;
-        System.out.println(files);
-
-        try {
-
-            for(MultipartFile image : files) {
-                System.out.println(image);
-                String originFilename = image.getOriginalFilename();
-                String extName
-                        = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-                Long size = image.getSize();
-                // 서버에서 저장 할 파일 이름
-                String saveFileName = genSaveFileName(extName);
-                System.out.println("originFilename : " + originFilename);
-                System.out.println("extensionName : " + extName);
-                System.out.println("size : " + size);
-                System.out.println("saveFileName : " + saveFileName);
-                writeFile(image, saveFileName);
-                url = PREFIX_URL + saveFileName;
-
-            }
-
-        }catch (IOException e) {
-            System.out.println("Error");
-            e.printStackTrace();
-            return -1;
-        }
-        return 1;
-
-    }
     private String genSaveFileName(String extName) {
         String fileName = "";
+
         Calendar calendar = Calendar.getInstance();
         fileName += calendar.get(Calendar.YEAR);
         fileName += calendar.get(Calendar.MONTH);

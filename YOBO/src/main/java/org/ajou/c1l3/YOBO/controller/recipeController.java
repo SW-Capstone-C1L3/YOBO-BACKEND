@@ -15,6 +15,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +26,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
 
 import javax.validation.Valid;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -50,15 +50,17 @@ public class recipeController {
     CurrentRecipeRepository currentRecipeRepository;
 
     @GetMapping("/yobo/recipe/search/")
-    public List<YoboRecipe> getYoboRecipe(@RequestParam("recipeName") String recipeName){
+    public List<simpleRecipe> getYoboRecipe(@RequestParam("recipeName") String recipeName ,@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query = Query.query(where("recipe_name").regex(recipeName));
-        return mongoTemplate.find(query, YoboRecipe.class);
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        return mongoTemplate.find(query, simpleRecipe.class);
     }
 
 
     @GetMapping("/yobo/recipe/getRecipeList/")
     public  List<simpleRecipe> getRecipeList(@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
-        int skipn=pageNum*10;
+        int skipn=pageNum*pageSize;
         SkipOperation skip= Aggregation.skip(skipn);
         LimitOperation limit =Aggregation.limit(pageSize);
         Aggregation aggregation = Aggregation.newAggregation(skip,limit);
@@ -70,36 +72,34 @@ public class recipeController {
     @GetMapping("/yobo/recipe/getListbyCate/")
     public  List<simpleRecipe> getListbyCate(@RequestParam("cate") String cate, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         int skipn=pageNum*10;
-        SkipOperation skip= Aggregation.skip(skipn);
-        LimitOperation limit =Aggregation.limit(pageSize);
-        MatchOperation match = Aggregation.match( Criteria.where("category").regex(cate));
-        Aggregation aggregation = Aggregation.newAggregation(skip,limit,match);
-        AggregationResults<simpleRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",simpleRecipe.class);
-        List<simpleRecipe> list = results.getMappedResults();  //결과
-        return list;
+        Query query = Query.query(where("category").regex(cate));
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        return mongoTemplate.find(query, simpleRecipe.class);
+
     }
 
     @GetMapping("/yobo/recipe/getListbyUid/")
     public  List<simpleRecipe> getListbyUid(@RequestParam("uid") String uid, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
-        int skipn=pageNum*10;
-        SkipOperation skip= Aggregation.skip(skipn);
-        LimitOperation limit =Aggregation.limit(pageSize);
-        MatchOperation match = Aggregation.match( Criteria.where("writer_id").is(uid));
-        Aggregation aggregation = Aggregation.newAggregation(skip,limit,match);
-        AggregationResults<simpleRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",simpleRecipe.class);
-        List<simpleRecipe> list = results.getMappedResults();  //결과
-        return list;
+        Query query = Query.query(where("writer_id").is(uid));
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        return mongoTemplate.find(query, simpleRecipe.class);
     }
     @GetMapping("/yobo/recipe/getRecipebyDid/")
     public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
         Query query = Query.query(where("_id").is(Did));
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }
-//    @GetMapping("/yobo/recipe/getImage/")
-//    public ResponseEntity<byte[]> getImage(@RequestParam("ImagPath") String ImgPath) {
-////        byte[] image = imageService.getImage(ImgPath);
-//        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
-//    }
+    @RequestMapping(value = "/yobo/recipe/getImage/",method= RequestMethod.GET,produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getImage(@RequestParam String filePath) throws IOException {
+        RandomAccessFile f = new RandomAccessFile(filePath, "r");
+        byte[] b = new byte[(int)f.length()];
+        f.readFully(b);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<byte[]>(b, headers, HttpStatus.CREATED);
+    }
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
     public int createRecipe(@RequestParam("img")  MultipartFile[] files,@RequestParam  String recipe){
@@ -184,7 +184,6 @@ public class recipeController {
     }
     private String genSaveFileName(String extName) {
         String fileName = "";
-
         Calendar calendar = Calendar.getInstance();
         fileName += calendar.get(Calendar.YEAR);
         fileName += calendar.get(Calendar.MONTH);

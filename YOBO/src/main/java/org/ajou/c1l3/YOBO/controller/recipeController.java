@@ -7,6 +7,7 @@ import jdk.nashorn.internal.parser.JSONParser;
 import org.ajou.c1l3.YOBO.domain.YoboRecipe;
 import org.ajou.c1l3.YOBO.domain.simpleRecipe;
 import org.ajou.c1l3.YOBO.repository.CurrentRecipeRepository;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.support.MultipartFilter;
 import javax.validation.Valid;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -45,10 +49,10 @@ public class recipeController {
     @Autowired
     CurrentRecipeRepository currentRecipeRepository;
 
-    @GetMapping("/yobo/recipe/search/{recipeName}")
-    public YoboRecipe getYoboRecipe(@PathVariable String recipeName){
-        Query query = Query.query(where("recipe_name").is(recipeName));
-        return mongoTemplate.findOne(query, YoboRecipe.class);
+    @GetMapping("/yobo/recipe/search/")
+    public List<YoboRecipe> getYoboRecipe(@RequestParam("recipeName") String recipeName){
+        Query query = Query.query(where("recipe_name").regex(recipeName));
+        return mongoTemplate.find(query, YoboRecipe.class);
     }
 
 
@@ -68,7 +72,7 @@ public class recipeController {
         int skipn=pageNum*10;
         SkipOperation skip= Aggregation.skip(skipn);
         LimitOperation limit =Aggregation.limit(pageSize);
-        MatchOperation match = Aggregation.match( Criteria.where("category").in(cate));
+        MatchOperation match = Aggregation.match( Criteria.where("category").regex(cate));
         Aggregation aggregation = Aggregation.newAggregation(skip,limit,match);
         AggregationResults<simpleRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",simpleRecipe.class);
         List<simpleRecipe> list = results.getMappedResults();  //결과
@@ -91,6 +95,11 @@ public class recipeController {
         Query query = Query.query(where("_id").is(Did));
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }
+//    @GetMapping("/yobo/recipe/getImage/")
+//    public ResponseEntity<byte[]> getImage(@RequestParam("ImagPath") String ImgPath) {
+////        byte[] image = imageService.getImage(ImgPath);
+//        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+//    }
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
     public int createRecipe(@RequestParam("img")  MultipartFile[] files,@RequestParam  String recipe){
@@ -188,6 +197,9 @@ public class recipeController {
 
         return fileName;
     }
+
+
+
 
     // 파일을 실제로 write 하는 메서드
     private boolean writeFile(MultipartFile multipartFile, String saveFileName)

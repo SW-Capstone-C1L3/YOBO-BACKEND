@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @Document(collection="User")
 public class YoboUser{
+    private String _id;
     private String user_id;
     private String user_name;
     private int user_age;

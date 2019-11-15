@@ -1,12 +1,21 @@
 package org.ajou.c1l3.YOBO.controller;
 
+import com.mongodb.BasicDBObject;
 import org.ajou.c1l3.YOBO.domain.YoboBasket;
 import org.ajou.c1l3.YOBO.domain.YoboComment;
+import org.ajou.c1l3.YOBO.domain.YoboProduct;
+import org.ajou.c1l3.YOBO.domain.simpleBasket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RestController
 public class commentsController {
@@ -14,19 +23,53 @@ public class commentsController {
     @Autowired
     MongoTemplate mongoTemplate;
 
-//    @PostMapping(value = "/yobo/basket/createBasket")
-//    public int createBasket(@RequestParam("User_id") YoboComment User_id) {
-//        try {
-//
-//            YoboBasket basket=new YoboBasket(User_id,null);
-//            mongoTemplate.insert(basket);
-//            return 1;
-//
-//        }catch (Exception e) {
-//            System.out.println(User_id);
-//            e.printStackTrace();
-//            return -1;
-//        }
-//    }
+    @PostMapping(value = "/yobo/comments/createcomments")
+    public int createComments(@RequestBody YoboComment comments) {
+        try {
+            mongoTemplate.insert(comments);
+            return 1;
 
+        }catch (Exception e) {
+            System.out.println(comments);
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+
+    @GetMapping(value = "/yobo/comments/getCommentsbyRId")
+    public List<YoboComment> getCommentsbyRId(@RequestParam("RId") String RId ,@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+        Query query = Query.query(where("recipe_id").is(RId));
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        query.with(new Sort(Sort.Direction.ASC, "timestamp"));
+        return mongoTemplate.find(query, YoboComment.class);
+    }
+    @PostMapping(value = "/yobo/comments/updateComments")
+    public int updateComments(@RequestParam("_id") String _id,@RequestParam("comments") String comments) {
+        try {
+            Query query = new Query();
+            query.addCriteria(
+                    new Criteria().where("_id").is(_id)
+            );
+            mongoTemplate.findAndModify(
+                    query
+                    ,new Update().set("comments",comments)
+                    ,YoboComment.class);
+            return 1;
+        }catch (Exception e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    @GetMapping(value = "/yobo/comments/getCommentsbyUId")
+    public List<YoboComment> getCommentsbyUId(@RequestParam("UId") String UId ,@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+        Query query = Query.query(where("user_id").is(UId));
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        query.with(new Sort(Sort.Direction.ASC, "timestamp"));
+        return mongoTemplate.find(query, YoboComment.class);
+    }
 }

@@ -87,7 +87,7 @@ public class recipeController {
         return mongoTemplate.find(query, simpleRecipe.class);
     }
     @GetMapping("/yobo/recipe/getRecipebyDid/")
-    public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
+        public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
         Query query = Query.query(where("_id").is(Did));
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }

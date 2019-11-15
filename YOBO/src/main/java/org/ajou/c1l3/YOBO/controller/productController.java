@@ -103,6 +103,14 @@ public class productController {
         return mongoTemplate.find(query, YoboProduct.class);
     }
 
+    @GetMapping("/yobo/product/searchbyDid/")
+    public YoboProduct getProductbyDID(@RequestParam("Did") String Did , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+        Query query = Query.query(where("_id").is(Did));
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        return mongoTemplate.findOne(query, YoboProduct.class);
+    }
+
     @GetMapping("/yobo/product/getProducteList/")
     public  List<YoboProduct> getProducteList(@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         int skipn=pageNum*pageSize;
@@ -137,8 +145,6 @@ public class productController {
 
         return fileName;
     }
-
-
 
     // 파일을 실제로 write 하는 메서드
     private boolean writeFile(MultipartFile multipartFile, String saveFileName)

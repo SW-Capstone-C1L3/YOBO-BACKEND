@@ -18,6 +18,11 @@ public class YoboBasket {
     @Data
     public static class product{
         private String Product_id;
+        private String product_image;
+        private String product_description;
         private int qty;
+        private int product_price;
+
     }
+
 }

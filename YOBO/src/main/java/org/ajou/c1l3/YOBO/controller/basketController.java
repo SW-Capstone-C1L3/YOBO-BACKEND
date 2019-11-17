@@ -1,12 +1,16 @@
 package org.ajou.c1l3.YOBO.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.ajou.c1l3.YOBO.domain.YoboBasket;
+import org.ajou.c1l3.YOBO.domain.YoboProduct;
 import org.ajou.c1l3.YOBO.domain.simpleBasket;
 import org.ajou.c1l3.YOBO.domain.simpleRecipe;
 import org.apache.catalina.User;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.validation.constraints.Null;
 import java.io.IOException;
@@ -106,7 +111,20 @@ public class basketController {
     @GetMapping(value = "/yobo/basket/getBasket")
     public YoboBasket getBasket(@RequestParam("User_id") String User_id) {
             Query query = query(where("user_id").is(User_id));
-            return mongoTemplate.findOne(query, YoboBasket.class);
+            YoboBasket yoboBasket = mongoTemplate.findOne(query,YoboBasket.class);
+            System.out.println(yoboBasket);
+            for(YoboBasket.product basket:yoboBasket.getBasket()){
+                Query query2 = query(where("_id").is(basket.getProduct_id()));
+                YoboProduct yoboProduct =mongoTemplate.findOne(query2,YoboProduct.class);
+                System.out.println(yoboProduct);
+
+                basket.setProduct_description(yoboProduct.getProduct_description());
+                basket.setProduct_image(yoboProduct.getProduct_image());
+                basket.setProduct_price(yoboProduct.getProduct_price());
+
+            }
+
+            return yoboBasket;
     }
 
 }

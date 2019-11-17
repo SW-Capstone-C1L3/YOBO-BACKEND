@@ -117,13 +117,11 @@ public class basketController {
                 Query query2 = query(where("_id").is(basket.getProduct_id()));
                 YoboProduct yoboProduct =mongoTemplate.findOne(query2,YoboProduct.class);
                 System.out.println(yoboProduct);
-
                 basket.setProduct_description(yoboProduct.getProduct_description());
                 basket.setProduct_image(yoboProduct.getProduct_image());
                 basket.setProduct_price(yoboProduct.getProduct_price());
                 basket.setProduct_name(yoboProduct.getProduct_name());
             }
-
             return yoboBasket;
     }
 

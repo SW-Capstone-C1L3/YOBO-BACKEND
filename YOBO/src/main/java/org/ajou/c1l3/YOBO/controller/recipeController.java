@@ -102,7 +102,7 @@ public class recipeController {
     }
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
-    public int createRecipe(@RequestParam("img")  MultipartFile[] files,@RequestParam  String recipe){
+    public int createRecipe(@RequestParam("img")  List<MultipartFile> files,@RequestParam  String recipe){
         ObjectMapper objectMapper =new ObjectMapper();
         YoboRecipe recipe1;
         String url = null;
@@ -113,7 +113,7 @@ public class recipeController {
         Path currentRelativePath = Paths.get("");
         String s = currentRelativePath.toAbsolutePath().toString();
         System.out.println("Current relative path is: " + s);
-        System.out.println(files.length);
+        System.out.println(files.size());
         try {
             recipe1 = objectMapper.readValue(recipe, YoboRecipe.class);
             int imgcnt=0;
@@ -121,18 +121,18 @@ public class recipeController {
                 if(recipe1.getCooking_description()[i].getImage().equals("NULL"))continue;
                 else if(recipe1.getCooking_description()[i].getImage().equals("NULL")==false){
                     System.out.println(recipe1.getCooking_description()[i].getImage());
-                    System.out.println(files[imgcnt]);
-                    String originFilename = files[imgcnt].getOriginalFilename();
+                    System.out.println(files.get(imgcnt));
+                    String originFilename = files.get(imgcnt).getOriginalFilename();
                     String extName
                             = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-                    Long size = files[imgcnt].getSize();
+                    Long size = files.get(imgcnt).getSize();
                     // 서버에서 저장 할 파일 이름
                     String saveFileName = genSaveFileName(extName);
                     System.out.println("originFilename : " + originFilename);
                     System.out.println("extensionName : " + extName);
                     System.out.println("size : " + size);
                     System.out.println("saveFileName : " + saveFileName);
-                    writeFile(files[imgcnt], saveFileName);
+                    writeFile(files.get(imgcnt), saveFileName);
                     url = PREFIX_URL + saveFileName;
                     recipe1.getCooking_description()[i].setImage(url);
                     imgcnt+=1;

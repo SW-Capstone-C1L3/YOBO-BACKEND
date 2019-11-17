@@ -102,7 +102,7 @@ public class recipeController {
     }
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
-    public int createRecipe(@RequestParam("img")  List<MultipartFile> files,@RequestParam  String recipe){
+    public int createRecipe(@RequestParam("image")  List<MultipartFile> files,@RequestParam("recipe")  String recipe){
         System.out.println(("get message"));
         ObjectMapper objectMapper =new ObjectMapper();
         YoboRecipe recipe1;
@@ -181,6 +181,44 @@ public class recipeController {
         fos.close();
 
         return result;
+    }
+
+
+    @PostMapping(value = "/yobo/recipe/testimage", consumes = {"multipart/form-data"})
+    public int testimage(@RequestParam("image")  List<MultipartFile> files){
+
+        String url = null;
+        int test[] ={0,1};
+        System.out.println(test);
+        System.out.println(files);
+        //경로 확인 용
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        System.out.println("Current relative path is: " + s);
+        System.out.println(files.size());
+        try {
+
+              for(MultipartFile file:files) {
+                  String originFilename = file.getOriginalFilename();
+                  String extName
+                          = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+                  Long size = file.getSize();
+                  // 서버에서 저장 할 파일 이름
+                  String saveFileName = genSaveFileName(extName);
+                  System.out.println("originFilename : " + originFilename);
+                  System.out.println("extensionName : " + extName);
+                  System.out.println("size : " + size);
+                  System.out.println("saveFileName : " + saveFileName);
+                  writeFile(file, saveFileName);
+                  url = PREFIX_URL + saveFileName;
+              }
+        }catch (IOException e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+        return 1;
+
     }
 
 }

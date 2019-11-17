@@ -121,7 +121,7 @@ public class basketController {
                 basket.setProduct_description(yoboProduct.getProduct_description());
                 basket.setProduct_image(yoboProduct.getProduct_image());
                 basket.setProduct_price(yoboProduct.getProduct_price());
-
+                basket.setProduct_name(yoboProduct.getProduct_name());
             }
 
             return yoboBasket;

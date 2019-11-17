@@ -22,6 +22,7 @@ public class YoboBasket {
         private String product_description;
         private int qty;
         private int product_price;
+        private String product_name;
 
     }
 

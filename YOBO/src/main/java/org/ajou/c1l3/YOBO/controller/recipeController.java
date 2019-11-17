@@ -103,6 +103,7 @@ public class recipeController {
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
     public int createRecipe(@RequestParam("img")  List<MultipartFile> files,@RequestParam  String recipe){
+        System.out.println(("get message"));
         ObjectMapper objectMapper =new ObjectMapper();
         YoboRecipe recipe1;
         String url = null;

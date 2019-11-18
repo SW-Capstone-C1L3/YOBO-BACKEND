@@ -29,7 +29,9 @@ import javax.validation.Valid;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 import static net.bytebuddy.matcher.ElementMatchers.is;
@@ -91,6 +93,8 @@ public class recipeController {
         Query query = Query.query(where("_id").is(Did));
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }
+
+
     @RequestMapping(value = "/yobo/recipe/getImage/",method= RequestMethod.GET,produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getImage(@RequestParam String filePath) throws IOException {
         RandomAccessFile f = new RandomAccessFile(filePath, "r");
@@ -100,6 +104,8 @@ public class recipeController {
         headers.setContentType(MediaType.IMAGE_PNG);
         return new ResponseEntity<byte[]>(b, headers, HttpStatus.CREATED);
     }
+
+
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
     public int createRecipe(@RequestParam("image")  List<MultipartFile> files,@RequestParam("recipe")  String recipe){
@@ -167,6 +173,23 @@ public class recipeController {
         return fileName;
     }
 
+
+    @GetMapping(value = "/yobo/recipe/getByingredients")
+    public List<simpleRecipe> getByingredients(@RequestParam("ingredients")  List<String> ingredients, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+        System.out.println(ingredients);
+
+        List<Criteria> criterias = new ArrayList<Criteria>();
+        for(String i:ingredients){
+            criterias.add(new Criteria().where("main_cooking_ingredients").elemMatch(where("ingredients_name").is(i)));
+            System.out.println(i);
+        }
+        Criteria criteria = new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]));
+        Query query=new Query(criteria);
+
+        query.limit(pageSize);
+        query.skip(pageNum*pageSize);
+        return mongoTemplate.find(query, simpleRecipe.class);
+    }
 
 
 

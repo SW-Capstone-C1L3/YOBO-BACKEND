@@ -3,6 +3,7 @@ import org.ajou.c1l3.YOBO.domain.YoboBasket;
 import org.ajou.c1l3.YOBO.domain.YoboRecipe;
 import org.ajou.c1l3.YOBO.domain.YoboUser;
 import org.ajou.c1l3.YOBO.repository.CurrentRecipeRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -31,7 +32,7 @@ public class userController {
         return user;
     }
     @PostMapping("/yobo/recipe/addShortCut")
-    public int addShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") String Rid){
+    public int addShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") ObjectId Rid){
         try {
             mongoTemplate.updateFirst(query(where("_id").is(Uid)), new Update().push("recipe_shotcut", Rid), YoboUser.class);
             return 1;
@@ -43,7 +44,7 @@ public class userController {
     }
 
     @PostMapping("/yobo/recipe/DeleteShortCut")
-    public int DeleteShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") String Rid){
+    public int DeleteShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") ObjectId Rid){
         try {
             Query query = query( where("_id").is(Uid));
             Update update = new Update().pull("recipe_shotcut", Rid);

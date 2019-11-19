@@ -255,7 +255,7 @@ public class recipeController {
     }
 
     @PostMapping(value = "/yobo/recipe/testimage2", consumes = {"multipart/form-data"})
-    public int testimage2(@RequestParam  MultipartFile[] files){
+    public int testimage2(@RequestParam("image")  MultipartFile[] files){
 
         String url = null;
         int test[] ={0,1};

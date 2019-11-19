@@ -254,4 +254,40 @@ public class recipeController {
 
     }
 
+    @PostMapping(value = "/yobo/recipe/testimage2", consumes = {"multipart/form-data"})
+    public int testimage2(@RequestParam  MultipartFile[] files){
+
+        String url = null;
+        int test[] ={0,1};
+        System.out.println(test);
+        System.out.println(files);
+        //경로 확인 용
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        System.out.println("Current relative path is: " + s);
+        System.out.println(files.length);
+        try {
+
+            for(MultipartFile file:files) {
+                String originFilename = file.getOriginalFilename();
+                String extName
+                        = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+                Long size = file.getSize();
+                // 서버에서 저장 할 파일 이름
+                String saveFileName = genSaveFileName(extName);
+                System.out.println("originFilename : " + originFilename);
+                System.out.println("extensionName : " + extName);
+                System.out.println("size : " + size);
+                System.out.println("saveFileName : " + saveFileName);
+                writeFile(file, saveFileName);
+                url = PREFIX_URL + saveFileName;
+            }
+        }catch (IOException e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+        return 1;
+
+    }
 }

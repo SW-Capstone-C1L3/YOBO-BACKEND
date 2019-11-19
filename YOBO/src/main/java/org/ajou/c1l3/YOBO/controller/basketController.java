@@ -40,7 +40,6 @@ public class basketController {
     @PostMapping(value = "/yobo/basket/createBasket")
     public int createBasket(@RequestParam("User_id") String User_id) {
         try {
-
             YoboBasket basket=new YoboBasket(User_id,null);
             mongoTemplate.insert(basket);
             return 1;
@@ -57,7 +56,26 @@ public class basketController {
     public int insertBasket(@RequestParam("User_id") String User_id,@RequestParam("Product_id") String Product_id,@RequestParam("qty") int qty) {
         try {
             simpleBasket simpleBasket =new simpleBasket(Product_id,qty);
-            mongoTemplate.updateFirst(query(where("user_id").is(User_id)), new Update().push("basket", simpleBasket), YoboBasket.class);
+            Query query = new Query();
+            query.addCriteria(
+                    new Criteria().andOperator(
+                            where("user_id").is(User_id),
+                            where("basket").elemMatch(where("Product_id").is(Product_id)))
+            );
+            YoboBasket basket=mongoTemplate.findOne(query,YoboBasket.class);
+            int count=0;
+
+            if(basket!=null){
+                for(int i=0;i<basket.getBasket().length;i++){
+                    if(basket.getBasket()[i].getProduct_id().equals(Product_id)){
+                        count=basket.getBasket()[i].getQty();
+                        break;
+                    }
+                }
+                this.updateBasket(User_id,Product_id,qty+count);
+            }else{
+                mongoTemplate.updateFirst(query(where("user_id").is(User_id)), new Update().push("basket", simpleBasket), YoboBasket.class);
+            }
 
             return 1;
         }catch (Exception e) {

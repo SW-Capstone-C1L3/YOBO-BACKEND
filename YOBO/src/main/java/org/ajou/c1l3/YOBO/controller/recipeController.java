@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static net.bytebuddy.matcher.ElementMatchers.is;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RestController
@@ -183,9 +185,17 @@ public class recipeController {
             criterias.add(new Criteria().where("main_cooking_ingredients").elemMatch(where("ingredients_name").is(i)));
             System.out.println(i);
         }
-        Criteria criteria = new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]));
+        Criteria criteria = new Criteria().orOperator(criterias.toArray(new Criteria[criterias.size()]));
         Query query=new Query(criteria);
-
+//        Aggregation agg = newAggregation(
+//                match(Criteria.where("project").is(project)),
+//                project("employee", "manager"),
+//                project().and("manager").concatArrays("employee").as("merged"),
+//                unwind("merged"),
+//                group("merged.userId").count().as("total"),
+//                project("total").and("userId").previousOperation(),
+//                sort(Sort.Direction.DESC, "total")
+//        );
         query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, simpleRecipe.class);

@@ -138,6 +138,14 @@ public class recipeController {
                     System.out.println("extensionName : " + extName);
                     System.out.println("size : " + size);
                     System.out.println("saveFileName : " + saveFileName);
+                    File target = new File(SAVE_PATH, saveFileName);
+                    if (target.exists()){
+                        System.out.println("파일이 중복됨");
+                        UUID uuid = UUID.randomUUID();
+                        System.out.println(uuid);
+                        String convertPw = UUID.randomUUID().toString().replace("-", "");
+                        saveFileName+=convertPw;
+                    }
                     writeFile(files.get(imgcnt), saveFileName);
                     url = PREFIX_URL + saveFileName;
                     recipe1.getCooking_description()[i].setImage(url);
@@ -227,7 +235,6 @@ public class recipeController {
         System.out.println("Current relative path is: " + s);
         System.out.println(files.size());
         try {
-
               for(MultipartFile file:files) {
                   String originFilename = file.getOriginalFilename();
                   String extName
@@ -239,14 +246,14 @@ public class recipeController {
                   System.out.println("extensionName : " + extName);
                   System.out.println("size : " + size);
                   System.out.println("saveFileName : " + saveFileName);
-                  File target = new File(SAVE_PATH, saveFileName);
-                  if (target.exists()){
-                      System.out.println("파일이 중복됨");
-                      UUID uuid = UUID.randomUUID();
-                      System.out.println(uuid);
-                      String convertPw = UUID.randomUUID().toString().replace("-", "");
-                      saveFileName+=convertPw;
-                  }
+//                  File target = new File(SAVE_PATH, saveFileName);
+//                  if (target.exists()){
+//                      System.out.println("파일이 중복됨");
+//                      UUID uuid = UUID.randomUUID();
+//                      System.out.println(uuid);
+//                      String convertPw = UUID.randomUUID().toString().replace("-", "");
+//                      saveFileName+=convertPw;
+//                  }
                   writeFile(file, saveFileName);
                   url = PREFIX_URL + saveFileName;
               }

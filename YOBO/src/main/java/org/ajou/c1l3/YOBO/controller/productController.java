@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -24,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -51,10 +53,10 @@ public class productController {
         try {
             product1 = objectMapper.readValue(product, YoboProduct.class);
             int imgcnt=0;
-
                     String originFilename = files.getOriginalFilename();
                     String extName
                             = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+                    System.out.println(originFilename);
                     Long size = files.getSize();
                     // 서버에서 저장 할 파일 이름
                     String saveFileName = genSaveFileName(extName);
@@ -62,9 +64,17 @@ public class productController {
                     System.out.println("extensionName : " + extName);
                     System.out.println("size : " + size);
                     System.out.println("saveFileName : " + saveFileName);
+                     File target = new File(SAVE_PATH, saveFileName);
+            if (target.exists()){
+                System.out.println("파일이 중복됨");
+                UUID uuid = UUID.randomUUID();
+                System.out.println(uuid);
+                String convertPw = UUID.randomUUID().toString().replace("-", "");
+                saveFileName+=convertPw;
+            }
                     writeFile(files, saveFileName);
                     url = PREFIX_URL + saveFileName;
-            product1.setProduct_image(url);
+                    product1.setProduct_image(url);
                     imgcnt+=1;
 
             mongoTemplate.insert(product1);

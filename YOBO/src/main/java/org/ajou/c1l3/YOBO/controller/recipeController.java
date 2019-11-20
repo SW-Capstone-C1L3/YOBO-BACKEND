@@ -149,6 +149,8 @@ public class recipeController {
                         System.out.println(uuid);
                         String convertPw = UUID.randomUUID().toString().replace("-", "");
                         saveFileName+=convertPw+extName;
+                    }else{
+                        saveFileName+=extName;
                     }
                     writeFile(files.get(imgcnt), saveFileName);
                     url = PREFIX_URL + saveFileName;

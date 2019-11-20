@@ -76,6 +76,8 @@ public class productController {
                 String convertPw = UUID.randomUUID().toString().replace("-", "");
                 saveFileName+=convertPw+extName;
 
+            }else{
+                saveFileName+=extName;
             }
                     writeFile(files, saveFileName);
                     url = PREFIX_URL + saveFileName;

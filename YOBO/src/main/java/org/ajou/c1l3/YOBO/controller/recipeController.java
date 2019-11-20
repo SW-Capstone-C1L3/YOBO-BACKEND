@@ -138,13 +138,17 @@ public class recipeController {
                     System.out.println("extensionName : " + extName);
                     System.out.println("size : " + size);
                     System.out.println("saveFileName : " + saveFileName);
-                    File target = new File(SAVE_PATH, saveFileName);
+                    String tempfile=new String();
+                    tempfile=saveFileName+extName;
+                    File target = new File(SAVE_PATH, tempfile);
+
                     if (target.exists()){
                         System.out.println("파일이 중복됨");
+
                         UUID uuid = UUID.randomUUID();
                         System.out.println(uuid);
                         String convertPw = UUID.randomUUID().toString().replace("-", "");
-                        saveFileName+=convertPw;
+                        saveFileName+=convertPw+extName;
                     }
                     writeFile(files.get(imgcnt), saveFileName);
                     url = PREFIX_URL + saveFileName;
@@ -175,7 +179,6 @@ public class recipeController {
         fileName += calendar.get(Calendar.MINUTE);
         fileName += calendar.get(Calendar.SECOND);
         fileName += calendar.get(Calendar.MILLISECOND);
-        fileName += extName;
 
         return fileName;
     }

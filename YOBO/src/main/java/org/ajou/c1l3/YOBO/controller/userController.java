@@ -28,6 +28,8 @@ public class userController {
 
     @PostMapping("/yobo/recipe/createUser")
     public YoboUser createUser(@RequestBody YoboUser user){
+        basketController basketController = new basketController();
+        basketController.createBasket(user.getUser_id());
         mongoTemplate.insert(user);
         return user;
     }

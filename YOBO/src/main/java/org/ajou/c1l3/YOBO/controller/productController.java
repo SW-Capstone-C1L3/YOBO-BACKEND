@@ -70,7 +70,6 @@ public class productController {
 
             if (target.exists()){
                 System.out.println("파일이 중복됨");
-
                 UUID uuid = UUID.randomUUID();
                 System.out.println(uuid);
                 String convertPw = UUID.randomUUID().toString().replace("-", "");
@@ -112,6 +111,7 @@ public class productController {
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, YoboProduct.class);
     }
+
     @GetMapping("/yobo/product/searchbyPid/")
     public List<YoboProduct> getProductbyPID(@RequestParam("PID") String PID , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query = Query.query(where("provided_company_id").is(PID));

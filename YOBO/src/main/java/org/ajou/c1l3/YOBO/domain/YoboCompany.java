@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class YoboCompany {
     private String _id;
     private String company_name;
-
+    private String company_phone_num;
+    private double company_rating;
+    private String company_location;
 
 }

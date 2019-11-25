@@ -1,25 +1,31 @@
 package org.ajou.c1l3.YOBO.controller;
-import java.io.IOException;
 
-import javax.servlet.http.HttpSession;
-
+import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import org.ajou.c1l3.YOBO.domain.YoboUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.github.scribejava.core.model.OAuth2AccessToken;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * Handles requests for the application home page.
  */
-@Controller
+@RestController
 public class LoginController {
 
     /* NaverLoginBO */
     private NaverLoginBO naverLoginBO;
     private String apiResult = null;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
+    @Autowired
+    userController userController;
     @Autowired
     private void setNaverLoginBO(NaverLoginBO naverLoginBO) {
         this.naverLoginBO = naverLoginBO;
@@ -42,13 +48,23 @@ public class LoginController {
         /* 생성한 인증 URL을 View로 전달 */
         return "users/naverlogin";
     }
-    @GetMapping(value = "/users/naverlog")
-    public String getdata(@RequestParam("at") OAuth2AccessToken at) throws IOException {
-        apiResult = naverLoginBO.getUserProfile(at).toString();
-        System.out.println("log");
 
-        System.out.println(naverLoginBO.getUserProfile(at).toString());
-        return apiResult;
+    @GetMapping("/users/naverlog")
+    public YoboUser getId(@RequestParam("at") OAuth2AccessToken at) throws IOException {
+        apiResult = naverLoginBO.getUserProfile(at);
+        System.out.println(apiResult);
+        JsonParser jsonParser = new JsonParser();
+        JsonElement jsonElement = jsonParser.parse(apiResult);
+        String userEmail=jsonElement.getAsJsonObject().get("response").getAsJsonObject().get("email").toString();
+        System.out.println(userEmail);
+        userEmail=userEmail.replaceAll("\"", "");
+        System.out.println("11");
+//        Query query = query(where("user_email").is(userEmail));
+//        System.out.println("이메일"+userEmail);
+//        YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
+        System.out.println("11");
+        return  userController.getUserInfo(userEmail);
+//        return  user;
     }
 
     //네이버 로그인 성공시 callback호출 메소드
@@ -84,6 +100,6 @@ public class LoginController {
 //      session.setAttribute("login",vo);
 //      return new ModelAndView("user/loginPost", "result", vo);
 
-        return "users/naverSuccess";
+        return apiResult.toString();
     }
 }

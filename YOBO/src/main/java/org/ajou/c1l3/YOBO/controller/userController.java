@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Null;
+
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -20,11 +22,16 @@ public class userController {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @GetMapping("/yobo/user/{User_id}")
-    public YoboUser getUserInfo(@PathVariable String User_id){
-        Query query = query(where("user_id").is(User_id));
-        return mongoTemplate.findOne(query, YoboUser.class);
+    @GetMapping("/yobo/user/{user_email}")
+    public YoboUser getUserInfo(@PathVariable String user_email){
+        user_email="dddfff22@naver.com";
+        Query query = query(where("user_email").is(user_email));
+        System.out.println("이메일"+user_email);
+        YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
+        System.out.println(user);
+        return user;
     }
+
 
     @PostMapping("/yobo/recipe/createUser")
     public YoboUser createUser(@RequestBody YoboUser user){
@@ -33,6 +40,8 @@ public class userController {
         mongoTemplate.insert(user);
         return user;
     }
+
+
     @PostMapping("/yobo/recipe/addShortCut")
     public int addShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") ObjectId Rid){
         try {

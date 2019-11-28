@@ -9,10 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class YoboRecipe{
     private String recipe_name;
     private String writer_id;
-    private int difficulty;
+    private String difficulty;
     private double rating;
     private String[] category;
-    private  int serving;
+    private String serving;
     private descrition[] cooking_description;
     private ingredients[] main_cooking_ingredients;
     private ingredients[] sub_cooking_ingredients;
@@ -25,7 +25,7 @@ public class YoboRecipe{
     @Data
     public static class ingredients{
         private String ingredients_name;
-        private int  qty;
+        private double  qty;
         private String unit;
     }
 

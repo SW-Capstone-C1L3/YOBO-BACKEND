@@ -9,10 +9,10 @@ public class simpleRecipe{
     private String _id;
     private String recipe_name;
     private String writer_id;
-    private int difficulty;
+    private String difficulty;
     private double rating;
     private String[] category;
-    private  int serving;
+    private  String serving;
     private YoboRecipe.descrition[] cooking_description;
 
     @Data

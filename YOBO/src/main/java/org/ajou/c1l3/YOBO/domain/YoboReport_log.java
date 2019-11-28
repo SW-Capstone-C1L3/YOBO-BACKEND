@@ -9,6 +9,9 @@ import java.util.Date;
 @Data
 @Document(collection="Report_log")
 public class YoboReport_log {
+
+    private String _id;
+
     public String getUser_id() {
         return user_id;
     }

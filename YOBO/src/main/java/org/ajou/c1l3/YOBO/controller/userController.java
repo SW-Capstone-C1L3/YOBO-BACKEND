@@ -22,9 +22,8 @@ public class userController {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @GetMapping("/yobo/user/{user_email}")
-    public YoboUser getUserInfo(@PathVariable String user_email){
-        user_email="dddfff22@naver.com";
+    @GetMapping("/yobo/user/getbyEmail")
+    public YoboUser getUserInfo(@RequestParam("Emai") String user_email){
         Query query = query(where("user_email").is(user_email));
         System.out.println("이메일"+user_email);
         YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
@@ -32,6 +31,13 @@ public class userController {
         return user;
     }
 
+    @GetMapping("/yobo/user/getbyDid")
+    public YoboUser getUserbyDid(@RequestParam("Did") String Did){
+        Query query = query(where("_id").is(Did));
+        YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
+        System.out.println(user);
+        return user;
+    }
 
     @PostMapping("/yobo/recipe/createUser")
     public YoboUser createUser(@RequestBody YoboUser user){

@@ -4,9 +4,10 @@ import org.ajou.c1l3.YOBO.domain.YoboComment;
 import org.ajou.c1l3.YOBO.domain.YoboCompany;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.mongodb.core.query.Query;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RestController
 public class companyController {
@@ -38,6 +39,12 @@ public class companyController {
             e.printStackTrace();
             return -1;
         }
+    }
+
+    @GetMapping(value = "/yobo/company/getCompanyByName")
+    public YoboCompany getCompanyByName(@RequestParam("name") String name) {
+        Query query = Query.query(where("company_name").is(name));
+        return mongoTemplate.findOne(query,YoboCompany.class);
     }
 
 }

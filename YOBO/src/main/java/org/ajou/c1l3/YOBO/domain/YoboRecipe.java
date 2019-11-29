@@ -13,6 +13,7 @@ public class YoboRecipe{
     private String writer_name;
     private String difficulty;
     private double rating;
+    private int rating_count;
     private String[] category;
     private String serving;
     private descrition[] cooking_description;

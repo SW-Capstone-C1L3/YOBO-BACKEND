@@ -87,6 +87,7 @@ public class recipeController {
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, simpleRecipe.class);
     }
+
     @GetMapping("/yobo/recipe/getRecipebyDid/")
         public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
         Query query = Query.query(where("_id").is(Did));

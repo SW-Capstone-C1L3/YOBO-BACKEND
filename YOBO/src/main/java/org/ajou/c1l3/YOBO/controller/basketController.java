@@ -130,6 +130,10 @@ public class basketController {
     public YoboBasket getBasket(@RequestParam("User_id") String User_id) {
             Query query = query(where("user_id").is(User_id));
             YoboBasket yoboBasket = mongoTemplate.findOne(query,YoboBasket.class);
+            if(yoboBasket==null){
+                this.createBasket(User_id);
+            }
+            yoboBasket = mongoTemplate.findOne(query,YoboBasket.class);
             System.out.println(yoboBasket);
             for(YoboBasket.product basket:yoboBasket.getBasket()){
                 Query query2 = query(where("_id").is(basket.getProduct_id()));

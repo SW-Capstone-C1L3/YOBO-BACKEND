@@ -93,9 +93,22 @@ public class recipeController {
     @GetMapping("/yobo/recipe/getRecipebyDid/")
         public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
         Query query = Query.query(where("_id").is(Did));
+
+
         return mongoTemplate.findOne(query, YoboRecipe.class);
     }
-
+    @DeleteMapping("/yobo/recipe/DeleteDid/")
+    public  int DeleteDid(@RequestParam("Did") String Did){
+        Query query = Query.query(where("_id").is(Did));
+        try {
+            mongoTemplate.remove(query, YoboRecipe.class);
+            return 0;
+        }catch (Exception e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
     @RequestMapping(value = "/yobo/recipe/getImage/",method= RequestMethod.GET,produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getImage(@RequestParam String filePath) throws IOException {

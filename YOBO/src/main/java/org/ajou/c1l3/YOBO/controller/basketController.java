@@ -54,6 +54,11 @@ public class basketController {
 
     @PostMapping(value = "/yobo/basket/insertBasket")
     public int insertBasket(@RequestParam("User_id") String User_id,@RequestParam("Product_id") String Product_id,@RequestParam("qty") int qty) {
+        Query tmpquery = query(where("user_id").is(User_id));
+        YoboBasket yoboBasket = mongoTemplate.findOne(tmpquery,YoboBasket.class);
+        if(yoboBasket==null){
+            this.createBasket(User_id);
+        }
         try {
             simpleBasket simpleBasket =new simpleBasket(Product_id,qty);
             Query query = new Query();

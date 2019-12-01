@@ -26,14 +26,13 @@ public class commentsController {
     MongoTemplate mongoTemplate;
 
     @PostMapping(value = "/yobo/comments/createcomments")
-    public int createComments(@RequestBody YoboComment comments) {
+    public int createComments(@RequestParam("comments") YoboComment comments) {
         TimeZone time;
         java.util.Date date = new java.util.Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         calendar.setTime(date);
         try {
-
             comments.setTimestamp(new Timestamp(date.getTime()));
             mongoTemplate.insert(comments);
             return 1;

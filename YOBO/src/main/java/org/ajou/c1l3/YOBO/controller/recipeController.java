@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.operation.FindOperation;
 import com.mongodb.util.JSON;
 import jdk.nashorn.internal.parser.JSONParser;
-import org.ajou.c1l3.YOBO.domain.YoboRecipe;
-import org.ajou.c1l3.YOBO.domain.simpleRecipe;
+import org.ajou.c1l3.YOBO.domain.*;
 import org.ajou.c1l3.YOBO.repository.CurrentRecipeRepository;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,6 +35,7 @@ import java.util.*;
 import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 @RestController
 public class recipeController {
@@ -80,6 +81,7 @@ public class recipeController {
 
     }
 
+
     @GetMapping("/yobo/recipe/getListbyUid/")
     public  List<simpleRecipe> getListbyUid(@RequestParam("uid") String uid, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query = Query.query(where("writer_id").is(uid));
@@ -105,7 +107,36 @@ public class recipeController {
         return new ResponseEntity<byte[]>(b, headers, HttpStatus.CREATED);
     }
 
+    @PostMapping("/yobo/recipe/rate")
+    public int rate(@RequestParam("Rid") String rid,@RequestParam("uid") String uid,@RequestParam("rate") double rate) {
+        Query query = new Query();
+        try {
+            YoboRecipe.rated_people rated = new YoboRecipe.rated_people(uid, rate);
+            mongoTemplate.updateFirst(query(where("_id").is(rid)), new Update().push("rated", rated), YoboRecipe.class);
+            return 1;
+        }catch (Exception e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
+    @PostMapping("/yobo/recipe/checkrate")
+    public int rate(@RequestParam("Rid") String rid,@RequestParam("uid") String uid){
+        Query query = new Query();
+
+        query.addCriteria(
+                    new Criteria().andOperator(
+                            where("_id").is(rid),
+                            where("rated").elemMatch(where("uid").is(uid)))
+            );
+            YoboRecipe recipe=mongoTemplate.findOne(query,YoboRecipe.class);
+            if(recipe==null){
+                return 1;
+            }else{
+                return -1;
+            }
+    }
 
     @PostMapping(value = "/yobo/recipe/createRecipe", consumes = {"multipart/form-data"})
     public int createRecipe(@RequestParam("image")  List<MultipartFile> files,@RequestParam("recipe")  String recipe){
@@ -198,15 +229,7 @@ public class recipeController {
         }
         Criteria criteria = new Criteria().orOperator(criterias.toArray(new Criteria[criterias.size()]));
         Query query=new Query(criteria);
-//        Aggregation agg = newAggregation(
-//                match(Criteria.where("project").is(project)),
-//                project("employee", "manager"),
-//                project().and("manager").concatArrays("employee").as("merged"),
-//                unwind("merged"),
-//                group("merged.userId").count().as("total"),
-//                project("total").and("userId").previousOperation(),
-//                sort(Sort.Direction.DESC, "total")
-//        );
+
         query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, simpleRecipe.class);

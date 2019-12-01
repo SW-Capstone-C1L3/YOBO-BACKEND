@@ -17,7 +17,7 @@ public class companyController {
     MongoTemplate mongoTemplate;
 
     @PostMapping(value = "/yobo/company/createcompany")
-    public int createCompany(@RequestBody YoboCompany company) {
+    public int createCompany(@RequestParam("company") YoboCompany company) {
         try {
             mongoTemplate.insert(company);
             return 1;

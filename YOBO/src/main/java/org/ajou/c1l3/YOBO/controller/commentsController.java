@@ -26,6 +26,7 @@ public class commentsController {
 
     @PostMapping(value = "/yobo/comments/createcomments")
     public int createComments(@RequestParam("comments") String comments) throws IOException {
+        System.out.println(comments);
         TimeZone time;
         ObjectMapper objectMapper =new ObjectMapper();
         java.util.Date date = new java.util.Date();

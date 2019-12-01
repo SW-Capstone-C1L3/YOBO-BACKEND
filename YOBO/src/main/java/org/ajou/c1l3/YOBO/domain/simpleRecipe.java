@@ -9,6 +9,8 @@ public class simpleRecipe{
     private String _id;
     private String recipe_name;
     private String writer_id;
+    private String writer_name;
+
     private String difficulty;
     private double rating;
     private String[] category;

@@ -13,7 +13,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -25,7 +27,14 @@ public class commentsController {
 
     @PostMapping(value = "/yobo/comments/createcomments")
     public int createComments(@RequestBody YoboComment comments) {
+        TimeZone time;
+        java.util.Date date = new java.util.Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+        calendar.setTime(date);
         try {
+
+            comments.setTimestamp(new Timestamp(date.getTime()));
             mongoTemplate.insert(comments);
             return 1;
 

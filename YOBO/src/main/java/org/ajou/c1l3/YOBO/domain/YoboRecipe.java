@@ -19,7 +19,7 @@ public class YoboRecipe{
     private descrition[] cooking_description;
     private ingredients[] main_cooking_ingredients;
     private ingredients[] sub_cooking_ingredients;
-
+    private rated_people[] rate_uid;
     @Data
     public static class descrition{
         private String description;
@@ -32,5 +32,10 @@ public class YoboRecipe{
         private double  qty;
         private String unit;
     }
+    @Data static class rated_people{
+        private String uid;
+        private int rate;
+    }
+
 
 }

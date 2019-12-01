@@ -47,9 +47,9 @@ public class transactionController {
         }
 
     }
-    @GetMapping("/yobo/transaction/getByUid")
-    public List<YoboTransaction_log> getByUid(@RequestParam("Uid") String Uid, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
-        Query query=Query.query(where("user_id").is(Uid));
+    @GetMapping("/yobo/transaction/getByDid")
+    public List<YoboTransaction_log> getByDid(@RequestParam("Did") String Did, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+        Query query=Query.query(where("user_Did").is(Did));
         return mongoTemplate.find(query,YoboTransaction_log.class);
     }
     @GetMapping("/yobo/transaction/getByCid")

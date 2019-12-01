@@ -36,7 +36,7 @@ public class commentsController {
         tmpcomment = objectMapper.readValue(comments, YoboComment.class);
         try {
             tmpcomment.setTimestamp(new Timestamp(date.getTime()));
-            mongoTemplate.insert(comments);
+            mongoTemplate.insert(tmpcomment);
             return 1;
 
         }catch (Exception e) {

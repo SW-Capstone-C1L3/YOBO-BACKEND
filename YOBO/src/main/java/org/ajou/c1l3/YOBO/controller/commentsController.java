@@ -1,10 +1,8 @@
 package org.ajou.c1l3.YOBO.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
-import org.ajou.c1l3.YOBO.domain.YoboBasket;
-import org.ajou.c1l3.YOBO.domain.YoboComment;
-import org.ajou.c1l3.YOBO.domain.YoboProduct;
-import org.ajou.c1l3.YOBO.domain.simpleBasket;
+import org.ajou.c1l3.YOBO.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -26,14 +25,17 @@ public class commentsController {
     MongoTemplate mongoTemplate;
 
     @PostMapping(value = "/yobo/comments/createcomments")
-    public int createComments(@RequestParam("comments") YoboComment comments) {
+    public int createComments(@RequestParam("comments") String comments) throws IOException {
         TimeZone time;
+        ObjectMapper objectMapper =new ObjectMapper();
         java.util.Date date = new java.util.Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         calendar.setTime(date);
+        YoboComment tmpcomment=new YoboComment();
+        tmpcomment = objectMapper.readValue(comments, YoboComment.class);
         try {
-            comments.setTimestamp(new Timestamp(date.getTime()));
+            tmpcomment.setTimestamp(new Timestamp(date.getTime()));
             mongoTemplate.insert(comments);
             return 1;
 

@@ -21,6 +21,11 @@ public class YoboTransaction_log {
     private String invoice_company;
     private String company_id;
     private double total_price;
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date timestamp;
 

@@ -12,7 +12,7 @@ public class YoboUser{
     private String user_id;
     private String user_name;
     private int user_age;
-    private int user_phone_num;
+    private String user_phone_num;
     private String[] interest_category;
     private int user_grade;
     private String user_email;

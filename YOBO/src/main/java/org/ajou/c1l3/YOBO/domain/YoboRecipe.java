@@ -7,6 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(collection="Recipe")
 public class YoboRecipe{
+    public String get_id() {
+        return _id;
+    }
+
     private String _id;
     private String recipe_name;
     private String writer_id;
@@ -43,8 +47,11 @@ public class YoboRecipe{
         private String uid;
         private double rate;
 
-        public rated_people(String uid, double rate) {
+        public void setUid(String uid) {
             this.uid = uid;
+        }
+
+        public void setRate(double rate) {
             this.rate = rate;
         }
     }

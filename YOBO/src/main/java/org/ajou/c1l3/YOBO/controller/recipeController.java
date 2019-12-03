@@ -125,7 +125,9 @@ public class recipeController {
         if(this.rate(rid,uid)==1) {
             Query query = new Query();
             try {
-                YoboRecipe.rated_people rated = new YoboRecipe.rated_people(uid, rate);
+                YoboRecipe.rated_people rated = new YoboRecipe.rated_people();
+                rated.setUid(uid);
+                rated.setRate(rate);
                 mongoTemplate.updateFirst(query(where("_id").is(rid)), new Update().push("rated", rated), YoboRecipe.class);
                 return 1;
             } catch (Exception e) {
@@ -207,6 +209,72 @@ public class recipeController {
                 }
 
             }
+            mongoTemplate.insert(recipe1);
+
+        }catch (IOException e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+        return 1;
+
+    }
+
+
+    @PostMapping(value = "/yobo/recipe/updateRecipe", consumes = {"multipart/form-data"})
+    public int updateRecipe(@RequestParam("image")  List<MultipartFile> files,@RequestParam("recipe")  String recipe){
+        System.out.println(("get message"));
+        ObjectMapper objectMapper =new ObjectMapper();
+        YoboRecipe recipe1;
+        String url = null;
+        int test[] ={0,1};
+        System.out.println(test);
+        System.out.println(files);
+        //경로 확인 용
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        System.out.println("Current relative path is: " + s);
+        System.out.println(files.size());
+        try {
+            recipe1 = objectMapper.readValue(recipe, YoboRecipe.class);
+            int imgcnt = 0;
+            for (int i = 0; i < recipe1.getCooking_description().length; i++) {
+                if (recipe1.getCooking_description()[i].getImage().equals("NULL")) continue;
+                else if (recipe1.getCooking_description()[i].getImage().equals("NULL") == false) {
+                    System.out.println(recipe1.getCooking_description()[i].getImage());
+                    System.out.println(files.get(imgcnt));
+                    String originFilename = files.get(imgcnt).getOriginalFilename();
+                    String extName
+                            = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+                    Long size = files.get(imgcnt).getSize();
+                    // 서버에서 저장 할 파일 이름
+                    String saveFileName = genSaveFileName(extName);
+                    System.out.println("originFilename : " + originFilename);
+                    System.out.println("extensionName : " + extName);
+                    System.out.println("size : " + size);
+                    System.out.println("saveFileName : " + saveFileName);
+                    String tempfile = new String();
+                    tempfile = saveFileName + extName;
+                    File target = new File(SAVE_PATH, tempfile);
+
+                    if (target.exists()) {
+                        System.out.println("파일이 중복됨");
+
+                        UUID uuid = UUID.randomUUID();
+                        System.out.println(uuid);
+                        String convertPw = UUID.randomUUID().toString().replace("-", "");
+                        saveFileName += convertPw + extName;
+                    } else {
+                        saveFileName += extName;
+                    }
+                    writeFile(files.get(imgcnt), saveFileName);
+                    url = PREFIX_URL + saveFileName;
+                    recipe1.getCooking_description()[i].setImage(url);
+                    imgcnt += 1;
+                }
+
+            }
+            this.DeleteDid(recipe1.get_id());
             mongoTemplate.insert(recipe1);
 
         }catch (IOException e) {

@@ -16,7 +16,7 @@ public class YoboComment {
     private String comments;
     private String user_id;
     private String user_name;
-
+    private String recipe_name;
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }

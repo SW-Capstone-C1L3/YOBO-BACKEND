@@ -226,6 +226,8 @@ public class recipeController {
         System.out.println(("get message"));
         ObjectMapper objectMapper =new ObjectMapper();
         YoboRecipe recipe1;
+        YoboRecipe recipe2;
+
         String url = null;
         int test[] ={0,1};
         System.out.println(test);
@@ -237,10 +239,11 @@ public class recipeController {
         System.out.println(files.size());
         try {
             recipe1 = objectMapper.readValue(recipe, YoboRecipe.class);
+            recipe2=this.getListbyDid(recipe1.get_id());
             int imgcnt = 0;
             for (int i = 0; i < recipe1.getCooking_description().length; i++) {
-                if (recipe1.getCooking_description()[i].getImage().equals("NULL")) continue;
-                else if (recipe1.getCooking_description()[i].getImage().equals("NULL") == false) {
+                if (recipe1.getCooking_description()[i].getImage().equals("NULL")||recipe1.getCooking_description()[i].getImage().equals("exit")) continue;
+                else if (recipe1.getCooking_description()[i].getImage().equals("change")) {
                     System.out.println(recipe1.getCooking_description()[i].getImage());
                     System.out.println(files.get(imgcnt));
                     String originFilename = files.get(imgcnt).getOriginalFilename();
@@ -273,6 +276,11 @@ public class recipeController {
                     imgcnt += 1;
                 }
 
+            }
+            for (int i = 0; i < recipe1.getCooking_description().length; i++) {
+                if(recipe1.getCooking_description()[i].getImage().equals("exit")){
+                    recipe1.getCooking_description()[i].setImage(recipe2.getCooking_description()[i].getImage());
+                }
             }
             this.DeleteDid(recipe1.get_id());
             mongoTemplate.insert(recipe1);

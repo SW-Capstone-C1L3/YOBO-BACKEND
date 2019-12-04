@@ -19,5 +19,11 @@ public class YoboUser{
     private String[] user_address;
     private String[] recipe_shotcut;
 
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    private String image;
+
 }
 

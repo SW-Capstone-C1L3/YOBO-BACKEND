@@ -13,7 +13,9 @@ public class YoboTransaction_log {
     private String user_Did;
     private String user_id;
     private String _id;
-    private product[] products;
+    private String product_id;
+    private double  product_qty;
+    private String product_name;
     private String user_address;
     private String user_phone_num;
     private String transaction_status;
@@ -29,9 +31,5 @@ public class YoboTransaction_log {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date timestamp;
 
-    @Data
-    public static class product{
-        private String product_id;
-        private double  product_qty;
-    }
+
 }

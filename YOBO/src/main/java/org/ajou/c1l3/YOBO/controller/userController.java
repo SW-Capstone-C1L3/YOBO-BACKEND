@@ -11,6 +11,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +23,7 @@ import javax.validation.constraints.Null;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -172,7 +177,15 @@ public class userController {
             return -1;
         }
     }
-
+@RequestMapping(value = "/yobo/user/getImage/",method= RequestMethod.GET,produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getImage(@RequestParam String filePath) throws IOException {
+        RandomAccessFile f = new RandomAccessFile(filePath, "r");
+        byte[] b = new byte[(int)f.length()];
+        f.readFully(b);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<byte[]>(b, headers, HttpStatus.CREATED);
+    }
 
     private String genSaveFileName(String extName) {
         String fileName = "";

@@ -32,7 +32,7 @@ public class YoboTransaction_log {
     public static class product{
         private String product_id;
         private double  product_qty;
-        private double total_price;
+        private double price;
         private String company_id;
     }
 }

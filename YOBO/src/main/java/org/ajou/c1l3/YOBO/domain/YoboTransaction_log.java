@@ -13,7 +13,7 @@ public class YoboTransaction_log {
     private String user_Did;
     private String user_id;
     private String _id;
-    private product products;
+    private product[] products;
     private String user_address;
     private String user_phone_num;
     private String transaction_status;

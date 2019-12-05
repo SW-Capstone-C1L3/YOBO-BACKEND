@@ -20,6 +20,7 @@ public class YoboTransaction_log {
     private String invoice_number;
     private String invoice_company;
     private double total_price;
+    private String company_id;
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
@@ -34,7 +35,6 @@ public class YoboTransaction_log {
         private double  product_qty;
         private double price;
         private String product_name;
-
         private String company_id;
     }
 }

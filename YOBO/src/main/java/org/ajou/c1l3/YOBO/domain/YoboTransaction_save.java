@@ -8,12 +8,12 @@ import java.util.Date;
 
 @Data
 @Document(collection="transaction_log")
-public class YoboTransaction_log {
+public class YoboTransaction_save {
 
     private String user_Did;
     private String user_id;
     private String _id;
-    private product[] products;
+    private YoboTransaction_log.product[] products;
     private String user_address;
     private String user_phone_num;
     private String transaction_status;
@@ -34,7 +34,6 @@ public class YoboTransaction_log {
         private double  product_qty;
         private double price;
         private String product_name;
-
         private String company_id;
     }
 }

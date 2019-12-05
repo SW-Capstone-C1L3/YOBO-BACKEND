@@ -26,6 +26,7 @@ public class transactionController {
 
     @PostMapping("/yobo/transaction/createtransaction")
     public int createTransaction(@RequestParam("transcationLog") String trasctionLog) throws IOException {
+        YoboTransaction_log trans[];
         System.out.println(trasctionLog);
         TimeZone time;
         ObjectMapper objectMapper =new ObjectMapper();

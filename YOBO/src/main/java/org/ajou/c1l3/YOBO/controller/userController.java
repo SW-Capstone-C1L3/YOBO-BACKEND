@@ -70,9 +70,8 @@ public class userController {
         mongoTemplate.insert(user);
         return user;
     }
-
     @PostMapping(value="/yobo/recipe/updateUser",consumes = {"multipart/form-data"})
-    public int updateUser(@RequestParam("image") MultipartFile file, @RequestParam("user") String user){
+    public int updateUser(@RequestParam(value="image",required = false) MultipartFile file, @RequestParam("user") String user){
         ObjectMapper objectMapper =new ObjectMapper();
         YoboUser tmpuser;
         String url = null;

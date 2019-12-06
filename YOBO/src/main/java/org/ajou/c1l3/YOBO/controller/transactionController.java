@@ -12,33 +12,32 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RestController
-public class transactionController {
+public class transactionController implements  Cloneable {
 
     @Autowired
     MongoTemplate mongoTemplate;
 
     @PostMapping("/yobo/transaction/createtransaction")
     public int createTransaction(@RequestParam("transcationLog") String trasctionLog) throws IOException {
-        List<YoboTransaction_log> trans=new ArrayList<YoboTransaction_log>();
         List<String> cid = new ArrayList();
+
         System.out.println(trasctionLog);
         TimeZone time;
         ObjectMapper objectMapper =new ObjectMapper();
-        java.util.Date date = new java.util.Date();
+        Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         calendar.setTime(date);
         YoboTransaction_log tmptransaction=new YoboTransaction_log();
+
         tmptransaction = objectMapper.readValue(trasctionLog, YoboTransaction_log.class);
         tmptransaction.setTimestamp(new Timestamp(date.getTime()));
+
 
         int flag=0;
 
@@ -50,44 +49,40 @@ public class transactionController {
             }
             if(flag==0){
                 cid.add(tmptransaction.getProducts()[i].getCompany_id());
+                System.out.println(tmptransaction.getProducts()[i].getCompany_id());
             }
             flag=0;
         }
-
         for(int i=0;i<cid.size();i++){
-            trans.add(tmptransaction);
-        }
+            YoboTransaction_log tmptransaction2=new YoboTransaction_log();
+            tmptransaction2 =objectMapper.readValue(trasctionLog, YoboTransaction_log.class);
+            tmptransaction2.setTimestamp(tmptransaction.getTimestamp());
+            List<YoboTransaction_log.product> product= new ArrayList();
+            double total=0;
 
-
-
-
-        for(int i=0;i<cid.size();i++){
-            List<YoboTransaction_log.product> product= new ArrayList<YoboTransaction_log.product>();
-            for(int j=0;j<tmptransaction.getProducts().length;i++){
+            for(int j=0;j<tmptransaction.getProducts().length;j++){
                 if(cid.get(i).equals(tmptransaction.getProducts()[j].getCompany_id())){
+                    total+=tmptransaction.getProducts()[j].getPrice()*tmptransaction.getProducts()[j].getProduct_qty();
                     product.add(tmptransaction.getProducts()[j]);
                 }
             }
+            System.out.println("dd");
             YoboTransaction_log.product[] simpleArray = new YoboTransaction_log.product[ product.size() ];
             product.toArray( simpleArray );
-            trans.get(i).setProducts(simpleArray);
-            trans.get(i).setCompany_id(product.get(0).getCompany_id());
-        }
+            tmptransaction2.setProducts(simpleArray);
+            tmptransaction2.setTotal_price(total);
 
+            tmptransaction2.setCompany_id(product.get(0).getCompany_id());
+            try {
+                    mongoTemplate.insert(tmptransaction2);
 
-
-        try {
-            for(int i=0;i<cid.size();i++){
-                mongoTemplate.insert(trans.get(i));
+            }catch (Exception e) {
+                System.out.println(tmptransaction);
+                e.printStackTrace();
+                return -1;
             }
-
-            return 1;
-
-        }catch (Exception e) {
-            System.out.println(tmptransaction);
-            e.printStackTrace();
-            return -1;
         }
+    return 1;
 
     }
     @GetMapping("/yobo/transaction/getByUid")

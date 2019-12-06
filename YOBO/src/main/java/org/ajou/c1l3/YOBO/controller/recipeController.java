@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.MultipartFilter;
+import org.ajou.c1l3.YOBO.domain.YoboUser;
+import org.ajou.c1l3.YOBO.controller.userController;
 
 import javax.validation.Valid;
 import java.io.*;
@@ -93,9 +95,12 @@ public class recipeController {
     @GetMapping("/yobo/recipe/getRecipebyDid/")
         public  YoboRecipe getListbyDid(@RequestParam("Did") String Did){
         Query query = Query.query(where("_id").is(Did));
-
-
         return mongoTemplate.findOne(query, YoboRecipe.class);
+    }
+    @GetMapping("/yobo/recipe/getSRecipebyDid/")
+    public  simpleRecipe getSRecipebyDid(@RequestParam("Did") String Did){
+        Query query = Query.query(where("_id").is(Did));
+        return mongoTemplate.findOne(query, simpleRecipe.class);
     }
     @DeleteMapping("/yobo/recipe/DeleteDid/")
     public  int DeleteDid(@RequestParam("Did") String Did){
@@ -309,7 +314,17 @@ public class recipeController {
         return fileName;
     }
 
-
+    @GetMapping(value ="yobo/recipe/getByshortcut")
+    public List<simpleRecipe> getByshortcut(@RequestParam("uid") String uid){
+        Query query = query(where("_id").is(uid));
+        YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
+        List<simpleRecipe> simple =new ArrayList();
+        for(String Did: user.getRecipe_shotcut()){
+            System.out.println(Did);
+            simple.add(this.getSRecipebyDid(Did));
+        }
+        return simple;
+    }
     @GetMapping(value = "/yobo/recipe/getByingredients")
     public List<simpleRecipe> getByingredients(@RequestParam("ingredients")  List<String> ingredients, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         System.out.println(ingredients);

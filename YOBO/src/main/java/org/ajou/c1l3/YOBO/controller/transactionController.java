@@ -96,9 +96,9 @@ public class transactionController implements  Cloneable {
         return mongoTemplate.find(query,YoboTransaction_log.class);
     }
     @GetMapping("/yobo/transaction/getByDid")
-    public List<YoboTransaction_log> getByDid(@RequestParam("Did") String Did, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+    public YoboTransaction_log getByDid(@RequestParam("Did") String Did, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query=Query.query(where("_id").is(Did));
-        return mongoTemplate.find(query,YoboTransaction_log.class);
+        return mongoTemplate.findOne(query,YoboTransaction_log.class);
     }
 
 }

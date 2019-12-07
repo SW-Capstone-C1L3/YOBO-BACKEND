@@ -325,6 +325,7 @@ public class recipeController {
         }
         return simple;
     }
+
     @GetMapping(value = "/yobo/recipe/getByingredients")
     public List<simpleRecipe> getByingredients(@RequestParam("ingredients")  List<String> ingredients, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         System.out.println(ingredients);
@@ -340,6 +341,61 @@ public class recipeController {
         query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, simpleRecipe.class);
+    }
+    @GetMapping("/yobo/recipe/getByrecommend")
+    public List<simpleRecipe> getByrecommend(@RequestParam("favorite") List<String> favorite){
+        List<simpleRecipe> sim = new ArrayList();
+        int flag=0;
+        for(String rec:favorite){
+            List<simpleRecipe> tmp =new ArrayList();
+            tmp=this.getListbyCate(rec,0,10);
+            for(simpleRecipe t:tmp){
+                flag=0;
+                for(simpleRecipe s:sim){
+                    if(s.get_id().equals(t.get_id())){
+                        flag=1;
+                    }
+                }
+                if(flag==0){
+                    sim.add(t);
+                    flag=0;
+                    break;
+                }
+            }
+        }
+        System.out.println(sim);
+        List<simpleRecipe> tmp2 =new ArrayList();
+        if(favorite.size()==0){
+            System.out.println(favorite.size());
+            tmp2=this.getRecipeList(0,3);
+            for(simpleRecipe t:tmp2){
+                sim.add(t);
+            }
+        }else{
+            tmp2=this.getListbyCate(favorite.get(0),0,10);
+            while(sim.size()<3){
+                System.out.println(sim.size());
+                for(simpleRecipe t:tmp2){
+                    if(sim.size()>=3){
+                        break;
+                    }
+                    flag=0;
+                    for(simpleRecipe s:sim){
+                        if(s.get_id().equals(t.get_id())){
+                            flag=1;
+                        }
+                    }
+                    if(flag==0){
+                        sim.add(t);
+                        flag=0;
+                    }
+                }
+            }
+
+        }
+
+        System.out.println(sim.size());
+        return sim;
     }
 
 

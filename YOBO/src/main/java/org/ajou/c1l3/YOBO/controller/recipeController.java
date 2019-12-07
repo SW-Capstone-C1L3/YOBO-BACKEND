@@ -381,7 +381,12 @@ public class recipeController {
             }
         }else{
             tmp2=this.getListbyCate(favorite.get(0),0,10);
+            int count=0;
             while(sim.size()<3){
+                count+=1;
+                if(count>10){
+                    break;
+                }
                 System.out.println(sim.size());
                 for(simpleRecipe t:tmp2){
                     if(sim.size()>=3){

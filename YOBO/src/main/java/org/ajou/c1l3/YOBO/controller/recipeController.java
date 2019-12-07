@@ -127,13 +127,21 @@ public class recipeController {
 
     @PostMapping("/yobo/recipe/rate")
     public int rate(@RequestParam("Rid") String rid,@RequestParam("uid") String uid,@RequestParam("rate") double rate) {
-        if(this.rate(rid,uid)==1) {
-            Query query = new Query();
+        if(this.checkrate(rid,uid)==1) {
+            Query query = new Query(where("_id").is(rid));
+            YoboRecipe recipe =mongoTemplate.findOne(query,YoboRecipe.class);
             try {
                 YoboRecipe.rated_people rated = new YoboRecipe.rated_people();
                 rated.setUid(uid);
                 rated.setRate(rate);
                 mongoTemplate.updateFirst(query(where("_id").is(rid)), new Update().push("rated", rated), YoboRecipe.class);
+                Update update =new Update();
+                update.set("rating_count",recipe.getRating_count()+1);
+                update.set("rating",(recipe.getRating_count()*recipe.getRating()+rate)/(recipe.getRating_count()+1));
+                mongoTemplate.findAndModify(
+                        query
+                        ,update
+                        ,YoboRecipe.class);
                 return 1;
             } catch (Exception e) {
                 System.out.println("Error");
@@ -146,7 +154,7 @@ public class recipeController {
     }
 
     @PostMapping("/yobo/recipe/checkrate")
-    public int rate(@RequestParam("Rid") String rid,@RequestParam("uid") String uid){
+    public int checkrate(@RequestParam("Rid") String rid,@RequestParam("uid") String uid){
         Query query = new Query();
         query.addCriteria(
                     new Criteria().andOperator(

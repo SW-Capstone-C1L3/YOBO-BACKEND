@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ajou.c1l3.YOBO.domain.YoboComment;
 import org.ajou.c1l3.YOBO.domain.YoboReport_log;
 import org.ajou.c1l3.YOBO.domain.YoboTransaction_log;
+import org.ajou.c1l3.YOBO.domain.YoboUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -15,12 +17,33 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 @RestController
 public class transactionController implements  Cloneable {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @PostMapping("/yobo/transaction/modifystatus")
+    public int modifystatus(@RequestParam("Did") String Did,@RequestParam("invoice_company") String invoice_company,@RequestParam("invoice_number") String invoice_number,@RequestParam("transaction_status") String transaction_status){
+        try {
+            Query query=query(where("_id").is(Did));
+            Update update =new Update();
+            update.set("invoice_company",invoice_company);
+            update.set("invoice_number",invoice_number);
+            update.set("transaction_status",transaction_status);
+            mongoTemplate.findAndModify(
+                    query
+                    ,update
+                    , YoboTransaction_log.class);
+            return 1;
+        }catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
     @PostMapping("/yobo/transaction/createtransaction")
     public int createTransaction(@RequestParam("transcationLog") String trasctionLog) throws IOException {

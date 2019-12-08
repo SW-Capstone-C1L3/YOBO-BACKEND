@@ -18,7 +18,7 @@ import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
-
+@CrossOrigin
 @RestController
 public class transactionController implements  Cloneable {
 

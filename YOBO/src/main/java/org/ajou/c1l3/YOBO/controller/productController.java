@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
-
+@CrossOrigin
 @RestController
 public class productController {
     Path currentRelativePath = Paths.get("");
@@ -114,6 +114,7 @@ public class productController {
 
     @GetMapping("/yobo/product/searchbyPid/")
     public List<YoboProduct> getProductbyPID(@RequestParam("PID") String PID , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+        System.out.println(PID);
         Query query = Query.query(where("provided_company_id").is(PID));
         query.limit(pageSize);
         query.skip(pageNum*pageSize);

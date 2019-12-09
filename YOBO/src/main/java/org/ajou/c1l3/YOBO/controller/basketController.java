@@ -145,6 +145,7 @@ public class basketController {
                 YoboProduct yoboProduct =mongoTemplate.findOne(query2,YoboProduct.class);
                 if(yoboProduct==null){
                     this.DeleteBasket(User_id,basket.getProduct_id());
+                    continue;
                 }
                 System.out.println(yoboProduct);
                 basket.setProduct_description(yoboProduct.getProduct_description());

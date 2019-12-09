@@ -53,8 +53,10 @@ public class userController {
         YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
         if(user==null){
             YoboUser tmpUser=new YoboUser();
+            String[] array = user_email.split("@");
             tmpUser.setUser_email(user_email);
             tmpUser.setUser_name(user_name);
+            tmpUser.setUser_name(array[0]);
             createUser(tmpUser);
         }
         user=mongoTemplate.findOne(query, YoboUser.class);

@@ -60,7 +60,7 @@ public class LoginController {
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(apiResult);
         String userEmail=jsonElement.getAsJsonObject().get("response").getAsJsonObject().get("email").toString();
-        String username=jsonElement.getAsJsonObject().get("response").getAsJsonObject().get("username").toString();
+        String username=jsonElement.getAsJsonObject().get("response").getAsJsonObject().get("name").toString();
         System.out.println(userEmail);
         userEmail=userEmail.replaceAll("\"", "");
         System.out.println("11");

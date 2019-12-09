@@ -117,7 +117,6 @@ public class productController {
     @GetMapping("/yobo/product/search/")
     public List<YoboProduct> getProduct(@RequestParam("productName") String productName , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query = Query.query(where("product_name").regex(productName));
-        query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, YoboProduct.class);
     }
@@ -126,7 +125,6 @@ public class productController {
     public List<YoboProduct> getProductbyPID(@RequestParam("PID") String PID , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         System.out.println(PID);
         Query query = Query.query(where("provided_company_id").is(PID));
-        query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, YoboProduct.class);
     }
@@ -134,7 +132,6 @@ public class productController {
     @GetMapping("/yobo/product/searchbyDid/")
     public YoboProduct getProductbyDID(@RequestParam("Did") String Did , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query = Query.query(where("_id").is(Did));
-        query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.findOne(query, YoboProduct.class);
     }
@@ -152,7 +149,6 @@ public class productController {
     @GetMapping("/yobo/product/searchbycate/")
     public List<YoboProduct> getProductbycate(@RequestParam("cate") String cate , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         Query query = Query.query(where("product_category").regex(cate));
-        query.limit(pageSize);
         query.skip(pageNum*pageSize);
         return mongoTemplate.find(query, YoboProduct.class);
     }

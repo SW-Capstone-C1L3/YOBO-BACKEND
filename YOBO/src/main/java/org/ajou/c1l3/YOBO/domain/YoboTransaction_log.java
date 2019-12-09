@@ -21,6 +21,7 @@ public class YoboTransaction_log {
     private String invoice_company;
     private double total_price;
     private String company_id;
+    private String user_name;
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;

@@ -168,7 +168,7 @@ public class userController {
     }
 
     @PostMapping("/yobo/recipe/DeleteShortCut")
-    public int DeleteShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") ObjectId Rid){
+    public int DeleteShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") String Rid){
         try {
             Query query = query( where("_id").is(Uid));
             Update update = new Update().pull("recipe_shotcut", Rid);

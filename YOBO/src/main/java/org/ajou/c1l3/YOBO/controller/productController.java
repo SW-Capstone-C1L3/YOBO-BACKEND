@@ -42,16 +42,26 @@ public class productController {
 
 
     @PostMapping(value = "/yobo/product/createProduct", consumes = {"multipart/form-data"})
-    public int createProduct(@RequestParam("img")  MultipartFile files,@RequestParam  YoboProduct product){
-        ObjectMapper objectMapper =new ObjectMapper();
-        YoboProduct product1;
+    public int createProduct(@RequestParam("img")  MultipartFile files,@RequestParam("product_name") String product_name,@RequestParam("product_price")
+            int product_price,@RequestParam("product_category") String product_category,@RequestParam("product_qty") int product_qty,@RequestParam("product_unit")
+            String product_unit,@RequestParam("product_description") String product_description,@RequestParam("provided_company_id") String provided_company_id,@RequestParam("company_name")
+            String company_name ){
+            YoboProduct product1=new YoboProduct();
         String url = null;
         //경로 확인 용
         Path currentRelativePath = Paths.get("");
         String s = currentRelativePath.toAbsolutePath().toString();
         System.out.println("Current relative path is: " + s);
+        product1.setProduct_name(product_name);
+        product1.setCompany_name(company_name);
+        product1.setProduct_price(product_price);
+        product1.setProduct_category(product_category);
+        product1.setProduct_qty(product_qty);
+        product1.setProduct_unit(product_unit);
+        product1.setProduct_description(product_description);
+        product1.setProvided_company_id(provided_company_id);
+        product1.setCompany_name(company_name);
         try {
-            product1=product;
             int imgcnt=0;
                     String originFilename = files.getOriginalFilename();
                     String extName
@@ -133,8 +143,7 @@ public class productController {
     public  List<YoboProduct> getProducteList(@RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum,@RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         int skipn=pageNum*pageSize;
         SkipOperation skip= Aggregation.skip(skipn);
-        LimitOperation limit =Aggregation.limit(pageSize);
-        Aggregation aggregation = Aggregation.newAggregation(skip,limit);
+        Aggregation aggregation = Aggregation.newAggregation(skip);
         AggregationResults<YoboProduct> results = mongoTemplate.aggregate(aggregation,"Product",YoboProduct.class);
         List<YoboProduct> list = results.getMappedResults();  //결과
         return list;

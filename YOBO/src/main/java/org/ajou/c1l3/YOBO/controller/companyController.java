@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
+@CrossOrigin
 @RestController
 public class companyController {
 
@@ -46,5 +47,9 @@ public class companyController {
         Query query = Query.query(where("company_name").is(name));
         return mongoTemplate.findOne(query,YoboCompany.class);
     }
-
+    @GetMapping(value = "/yobo/company/getCompanyByEmail")
+    public YoboCompany getCompanyByEmail(@RequestParam("email") String email) {
+        Query query = Query.query(where("company_ld").is(email));
+        return mongoTemplate.findOne(query,YoboCompany.class);
+    }
 }

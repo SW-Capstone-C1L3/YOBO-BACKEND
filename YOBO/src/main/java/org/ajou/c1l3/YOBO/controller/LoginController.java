@@ -3,12 +3,14 @@ package org.ajou.c1l3.YOBO.controller;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.ajou.c1l3.YOBO.domain.YoboCompany;
 import org.ajou.c1l3.YOBO.domain.YoboUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.Query;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
@@ -26,6 +28,8 @@ public class LoginController {
 
     @Autowired
     userController userController;
+    @Autowired
+    companyController companyController;
     @Autowired
     private void setNaverLoginBO(NaverLoginBO naverLoginBO) {
         this.naverLoginBO = naverLoginBO;
@@ -56,6 +60,7 @@ public class LoginController {
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(apiResult);
         String userEmail=jsonElement.getAsJsonObject().get("response").getAsJsonObject().get("email").toString();
+        String username=jsonElement.getAsJsonObject().get("response").getAsJsonObject().get("username").toString();
         System.out.println(userEmail);
         userEmail=userEmail.replaceAll("\"", "");
         System.out.println("11");
@@ -63,10 +68,23 @@ public class LoginController {
 //        System.out.println("이메일"+userEmail);
 //        YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
         System.out.println("11");
-        return  userController.getUserInfo(userEmail);
+        return  userController.getUserInfo(userEmail,username);
 //        return  user;
     }
 
+    @CrossOrigin
+    @GetMapping("/company/naverlog")
+    public YoboCompany companyLogin(@RequestParam("email") String email) throws IOException {
+
+         if(companyController.getCompanyByEmail(email)==null){
+             YoboCompany cmp=new YoboCompany();
+             cmp.setCompany_ld(email);
+              companyController.createCompany(cmp);
+             return companyController.getCompanyByEmail(email);
+         }else{
+             return companyController.getCompanyByEmail(email);
+         }
+    }
     //네이버 로그인 성공시 callback호출 메소드
     @RequestMapping(value = "/users/callback.do", method = { RequestMethod.GET, RequestMethod.POST })
     public String callback(Model model, @RequestParam String code, @RequestParam String state, HttpSession session)

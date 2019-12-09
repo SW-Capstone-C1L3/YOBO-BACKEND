@@ -47,13 +47,21 @@ public class userController {
     MongoTemplate mongoTemplate;
 
     @GetMapping("/yobo/user/getbyEmail")
-    public YoboUser getUserInfo(@RequestParam("Emai") String user_email){
+    public YoboUser getUserInfo(@RequestParam("Emai") String user_email,@RequestParam("user_email") String user_name){
         Query query = query(where("user_email").is(user_email));
         System.out.println("이메일"+user_email);
         YoboUser user=mongoTemplate.findOne(query, YoboUser.class);
+        if(user==null){
+            YoboUser tmpUser=new YoboUser();
+            tmpUser.setUser_email(user_email);
+            tmpUser.setUser_name(user_name);
+            createUser(tmpUser);
+        }
+        user=mongoTemplate.findOne(query, YoboUser.class);
         System.out.println(user);
         return user;
     }
+
 
     @GetMapping("/yobo/user/getbyDid")
     public YoboUser getUserbyDid(@RequestParam("Did") String Did){

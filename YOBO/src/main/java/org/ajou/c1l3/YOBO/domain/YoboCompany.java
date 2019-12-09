@@ -11,5 +11,6 @@ public class YoboCompany {
     private String company_phone_num;
     private double company_rating;
     private String company_location;
+    private String company_ld;
 
 }

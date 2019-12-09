@@ -121,6 +121,20 @@ public class productController {
         return mongoTemplate.find(query, YoboProduct.class);
     }
 
+    @PostMapping("/yobo/product/delete/")
+    public int deleteProduct(@RequestParam("Did") String Did){
+        Query query = Query.query(where("_id").is(Did));
+        try {
+            mongoTemplate.remove(query, YoboProduct.class);
+
+        }catch (Exception e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return -1;
+        }
+        return 1;
+    }
+
     @GetMapping("/yobo/product/searchbyPid/")
     public List<YoboProduct> getProductbyPID(@RequestParam("PID") String PID , @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         System.out.println(PID);

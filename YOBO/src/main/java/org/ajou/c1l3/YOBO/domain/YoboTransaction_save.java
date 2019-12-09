@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @Document(collection="transaction_log")
 public class YoboTransaction_save {
-
+    private String user_name;
     private String user_Did;
     private String user_id;
     private String _id;

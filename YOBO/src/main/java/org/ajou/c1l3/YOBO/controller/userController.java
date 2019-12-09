@@ -142,7 +142,7 @@ public class userController {
     }
 
     @PostMapping("/yobo/recipe/addShortCut")
-    public int addShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") ObjectId Rid){
+    public int addShortCut(@RequestParam("Uid") String Uid, @RequestParam("Rid") String Rid){
         try {
             Query query = new Query();
             query.addCriteria(

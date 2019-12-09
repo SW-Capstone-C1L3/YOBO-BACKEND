@@ -42,7 +42,7 @@ public class productController {
 
 
     @PostMapping(value = "/yobo/product/createProduct", consumes = {"multipart/form-data"})
-    public int createProduct(@RequestParam("img")  MultipartFile files,@RequestParam  String product){
+    public int createProduct(@RequestParam("img")  MultipartFile files,@RequestParam  YoboProduct product){
         ObjectMapper objectMapper =new ObjectMapper();
         YoboProduct product1;
         String url = null;
@@ -51,7 +51,7 @@ public class productController {
         String s = currentRelativePath.toAbsolutePath().toString();
         System.out.println("Current relative path is: " + s);
         try {
-            product1 = objectMapper.readValue(product, YoboProduct.class);
+            product1=product;
             int imgcnt=0;
                     String originFilename = files.getOriginalFilename();
                     String extName

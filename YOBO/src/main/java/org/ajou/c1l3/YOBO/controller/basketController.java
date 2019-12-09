@@ -143,6 +143,9 @@ public class basketController {
             for(YoboBasket.product basket:yoboBasket.getBasket()){
                 Query query2 = query(where("_id").is(basket.getProduct_id()));
                 YoboProduct yoboProduct =mongoTemplate.findOne(query2,YoboProduct.class);
+                if(yoboProduct==null){
+                    this.DeleteBasket(User_id,basket.getProduct_id());
+                }
                 System.out.println(yoboProduct);
                 basket.setProduct_description(yoboProduct.getProduct_description());
                 basket.setProduct_image(yoboProduct.getProduct_image());

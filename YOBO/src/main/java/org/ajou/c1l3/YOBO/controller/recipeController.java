@@ -335,21 +335,40 @@ public class recipeController {
     }
 
     @GetMapping(value = "/yobo/recipe/getByingredients")
-    public List<simpleRecipe> getByingredients(@RequestParam("ingredients")  List<String> ingredients, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
+    public List<tmpYoboRecipe> getByingredients(@RequestParam("ingredients")  List<String> ingredients, @RequestParam(value="pageNum",required = false,defaultValue = "0")int pageNum, @RequestParam(value="pageSize",required = false,defaultValue = "10") int pageSize){
         System.out.println(ingredients);
-
         List<Criteria> criterias = new ArrayList<Criteria>();
+        List<Criteria> criterias2 = new ArrayList<Criteria>();
         for(String i:ingredients){
             criterias.add(new Criteria().where("main_cooking_ingredients").elemMatch(where("ingredients_name").is(i)));
             System.out.println(i);
         }
         Criteria criteria = new Criteria().orOperator(criterias.toArray(new Criteria[criterias.size()]));
         Query query=new Query(criteria);
-
-        query.limit(pageSize);
-        query.skip(pageNum*pageSize);
-        return mongoTemplate.find(query, simpleRecipe.class);
+        GroupOperation group = group("_id","recipe_name","writer_id","writer_name","difficulty","rating","category","serving","cooking_description").count().as("conut");
+        MatchOperation where = Aggregation.match(
+                 new Criteria().orOperator(criterias.toArray(new Criteria[criterias.size()]))
+        );
+        SortOperation sort=Aggregation.sort(Sort.Direction.DESC,"conut");
+        for(String i:ingredients){
+            criterias2.add(new Criteria().where("main_cooking_ingredients.ingredients_name").is(i));
+            System.out.println(i);
+        }
+        MatchOperation match2 = Aggregation.match(
+                new Criteria().orOperator(criterias2.toArray(new Criteria[criterias2.size()]))
+        );
+        UnwindOperation unwindOperation = Aggregation.unwind("main_cooking_ingredients");
+        Aggregation aggregation = Aggregation.newAggregation(where,unwindOperation,match2,group,sort);
+        AggregationResults<tmpYoboRecipe> results = mongoTemplate.aggregate(aggregation,"Recipe",tmpYoboRecipe.class);
+        List<tmpYoboRecipe> list = results.getMappedResults();
+        for(tmpYoboRecipe i:list){
+            System.out.println(i);
+        }
+        System.out.println((list));
+        return list;
     }
+
+
     @GetMapping("/yobo/recipe/getByrecommend")
     public List<simpleRecipe> getByrecommend(@RequestParam("favorite") List<String> favorite){
         List<simpleRecipe> sim = new ArrayList();
@@ -411,9 +430,6 @@ public class recipeController {
         return sim;
     }
 
-
-
-    // 파일을 실제로 write 하는 메서드
     private boolean writeFile(MultipartFile multipartFile, String saveFileName)
             throws IOException{
         boolean result = false;
@@ -427,84 +443,4 @@ public class recipeController {
     }
 
 
-    @PostMapping(value = "/yobo/recipe/testimage", consumes = {"multipart/form-data"})
-    public int testimage(@RequestParam("image")  List<MultipartFile> files){
-
-        String url = null;
-        int test[] ={0,1};
-        System.out.println(test);
-        System.out.println(files);
-        //경로 확인 용
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-        System.out.println("Current relative path is: " + s);
-        System.out.println(files.size());
-        try {
-              for(MultipartFile file:files) {
-                  String originFilename = file.getOriginalFilename();
-                  String extName
-                          = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-                  Long size = file.getSize();
-                  // 서버에서 저장 할 파일 이름
-                  String saveFileName = genSaveFileName(extName);
-                  System.out.println("originFilename : " + originFilename);
-                  System.out.println("extensionName : " + extName);
-                  System.out.println("size : " + size);
-                  System.out.println("saveFileName : " + saveFileName);
-//                  File target = new File(SAVE_PATH, saveFileName);
-//                  if (target.exists()){
-//                      System.out.println("파일이 중복됨");
-//                      UUID uuid = UUID.randomUUID();
-//                      System.out.println(uuid);
-//                      String convertPw = UUID.randomUUID().toString().replace("-", "");
-//                      saveFileName+=convertPw;
-//                  }
-                  writeFile(file, saveFileName);
-                  url = PREFIX_URL + saveFileName;
-              }
-        }catch (IOException e) {
-            System.out.println("Error");
-            e.printStackTrace();
-            return -1;
-        }
-        return 1;
-
-    }
-
-    @PostMapping(value = "/yobo/recipe/testimage2", consumes = {"multipart/form-data"})
-    public int testimage2(@RequestParam("image")  MultipartFile[] files){
-
-        String url = null;
-        int test[] ={0,1};
-        System.out.println(test);
-        System.out.println(files);
-        //경로 확인 용
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-        System.out.println("Current relative path is: " + s);
-        System.out.println(files.length);
-        try {
-
-            for(MultipartFile file:files) {
-                String originFilename = file.getOriginalFilename();
-                String extName
-                        = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-                Long size = file.getSize();
-                // 서버에서 저장 할 파일 이름
-                String saveFileName = genSaveFileName(extName);
-                System.out.println("originFilename : " + originFilename);
-                System.out.println("extensionName : " + extName);
-                System.out.println("size : " + size);
-                System.out.println("saveFileName : " + saveFileName);
-                writeFile(file, saveFileName);
-                url = PREFIX_URL + saveFileName;
-            }
-        }catch (IOException e) {
-            System.out.println("Error");
-            e.printStackTrace();
-            return -1;
-        }
-        return 1;
-
-    }
 }
